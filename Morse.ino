@@ -22,6 +22,7 @@ void setup() {
   mensaje="";
   pinMode(2, INPUT_PULLUP);
   pinMode(8, OUTPUT);
+  pinMode(11,OUTPUT);
   attachInterrupt(digitalPinToInterrupt(2), leerMorse, CHANGE);
 
   pinMode(3, INPUT_PULLUP);
@@ -31,15 +32,17 @@ void setup() {
   changes = 0;
 
   Timer1.initialize(5000000); // set a timer of length 100000 microseconds (or 0.1 sec - or 10Hz => the led will blink 5 times, 5 cycles of on-and-off, per second)
-  Timer1.attachInterrupt( timerIsr ); // attach the service routine here
+  Timer1.attachInterrupt(timerIsr ); // attach the service routine here
 
   iniciarDiccionario();
+  enviar("LUI");
+  //Serial.println(getCodigo("L"));
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   digitalWrite(8, HIGH); 
-  Serial.println(reconocer("ABABCBA"));
+  //Serial.println(reconocer("ABABCBA"));
 }
 
 void leerMorse() {
@@ -111,7 +114,6 @@ void activarMorse(){
   Serial.println(leer);
 }
 void timerIsr() {
-
 }
 
 void iniciarDiccionario(){
@@ -153,4 +155,49 @@ void iniciarDiccionario(){
   letra[34]="9";  codigo[34]="CBCBCBCBA";
   letra[35]="0";  codigo[35]="CBCBCBCBC";
 }
+
+void enviar(String msg){
+  //Serial.println(sizeof(msg));
+  for(int i=0;i<msg.length();i++){
+    char letraTemp = msg.charAt(i);
+    String codigoL = getCodigo(letraTemp);
+    for(int j=0;j<codigoL.length();j++){
+      char simbolo = codigoL.charAt(j);
+      if(simbolo=='A'){
+        generateDit();
+      }else if(simbolo=='B'){
+        generateSymbolSpace();
+      }else if(simbolo=='C'){
+        generateDash();
+      }
+    }
+  }
+}
+
+String getCodigo(char letraTemp){
+  String codigoTemp = "";
+  for(int i=0;i<sizeof(letra);i++){
+    if(letra[i]==String(letraTemp)){
+      //Serial.println(i);
+      codigoTemp = codigo[i];
+      break;
+    }
+  }
+  return codigoTemp;
+}
+
+void generateDit(){
+  digitalWrite(11, HIGH);
+  delay(ditTime);
+  digitalWrite(11, LOW);
+}
+void generateDash(){
+  digitalWrite(11, HIGH);
+  delay(dashTime);
+  digitalWrite(11, LOW);
+}
+void generateSymbolSpace(){
+  delay(ditTime);
+}
+
 
