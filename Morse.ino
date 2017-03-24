@@ -9,8 +9,8 @@ int wordSpaceTime;
 String cadena;
 String mensaje;
 
-int cantiadadLetras = 36;
-String letras[36];//Letras del abecedario
+int cantidadLetras = 36;
+String letra[36];//Letras del abecedario
 String codigo[36];//etras en morse
 
 bool leer;
@@ -39,6 +39,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   digitalWrite(8, HIGH); 
+  Serial.println(reconocer("ABABCBA"));
 }
 
 void leerMorse() {
