@@ -23,6 +23,7 @@ void setup() {
   pinMode(2, INPUT_PULLUP);
   pinMode(8, OUTPUT);
   pinMode(11,OUTPUT);
+  pinMode(12,OUTPUT);
   attachInterrupt(digitalPinToInterrupt(2), leerMorse, CHANGE);
 
   pinMode(3, INPUT_PULLUP);
@@ -35,7 +36,7 @@ void setup() {
   Timer1.attachInterrupt(timerIsr ); // attach the service routine here
 
   iniciarDiccionario();
-  enviar("LUI");
+  enviar("LUIS");
   //Serial.println(getCodigo("L"));
 }
 
@@ -94,12 +95,15 @@ String reconocer(String cad){
     temp= "O";
   }
   */
+  //Serial.println("___");
+  //Serial.println(cad);
   for(int i=0;i<cantidadLetras;i++){
     if(cad==codigo[i]){
       temp = letra[i];
       break;
     }
   }
+  //Serial.println(temp);
   return temp;
 }
 void activarMorse(){
@@ -157,6 +161,8 @@ void iniciarDiccionario(){
 }
 
 void enviar(String msg){
+  digitalWrite(12, HIGH);
+  delay(100);
   //Serial.println(sizeof(msg));
   for(int i=0;i<msg.length();i++){
     char letraTemp = msg.charAt(i);
@@ -171,7 +177,11 @@ void enviar(String msg){
         generateDash();
       }
     }
+    generateLetterSpace();
   }
+  delay(100);
+  digitalWrite(12, LOW);
+  
 }
 
 String getCodigo(char letraTemp){
@@ -199,5 +209,9 @@ void generateDash(){
 void generateSymbolSpace(){
   delay(ditTime);
 }
+void generateLetterSpace(){
+  delay(ditTime*4);
+}
+
 
 
