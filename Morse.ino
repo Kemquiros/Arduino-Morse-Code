@@ -9,9 +9,12 @@ int wordSpaceTime;
 String cadena;
 String mensaje;
 
-int cantidadLetras = 36;
-String letra[36];//Letras del abecedario
-String codigo[36];//etras en morse
+int cantidadLetras = 37;
+String letra[37];//Letras del abecedario
+String codigo[37];//etras en morse
+
+String inputString = "";
+boolean stringComplete = false;
 
 bool leer;
 void setup() {
@@ -43,6 +46,15 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   digitalWrite(8, HIGH); 
+  if(stringComplete){
+    
+    mensaje+=inputString;
+    Serial.println(mensaje);
+    enviar(mensaje);
+    
+    stringComplete=false;
+    inputString="";
+  }
   //Serial.println(reconocer("ABABCBA"));
 }
 
@@ -59,25 +71,34 @@ void leerMorse() {
       if(!state){
           if(time>ditTime-10 && time<ditTime+10){
             //dit
-            Serial.println("A");
+            //Serial.println("A");
             cadena=cadena+"A";
           }else if(time>dashTime-10 && time<dashTime+10){
             //dash
-            Serial.println("C");
+            //Serial.println("C");
             cadena=cadena+"C";
           }   
       }else{
         if(time>ditTime-10 && time<ditTime+10){
             //dit, pero con el led apagado
-            Serial.println("B");
+            //Serial.println("B");
             cadena=cadena+"B";
           }else if(time>dashTime-10 && time<dashTime+10){
             //dash con el led apagado
-            Serial.println("D");
+            //Serial.println("D");
             
             mensaje =mensaje+ reconocer(cadena);
+            //Serial.println(mensaje);
             //mensaje= mensaje+letra;
             cadena="";
+          }else if(time>(ditTime*5)+dashTime-10 && time<(ditTime*5)+dashTime+10){
+            
+            
+            mensaje =mensaje+ reconocer(cadena);
+            mensaje=mensaje+" ";
+            cadena="";
+          }else{
+            Serial.println(time);
           }
       }
     }
@@ -108,10 +129,11 @@ String reconocer(String cad){
 }
 void activarMorse(){
   if(!leer){
-    mensaje="";
+    
   }else{
     mensaje=mensaje+reconocer(cadena);
     cadena="";
+    //Serial.println("imprimir mensaje");
     Serial.println(mensaje);
   }
   leer = !leer;
@@ -158,26 +180,36 @@ void iniciarDiccionario(){
   letra[33]="8";  codigo[33]="CBCBCBABA";
   letra[34]="9";  codigo[34]="CBCBCBCBA";
   letra[35]="0";  codigo[35]="CBCBCBCBC";
+  letra[36]=" ";  codigo[36]="F";
 }
 
 void enviar(String msg){
+  mensaje="";
   digitalWrite(12, HIGH);
   delay(100);
   //Serial.println(sizeof(msg));
   for(int i=0;i<msg.length();i++){
     char letraTemp = msg.charAt(i);
-    String codigoL = getCodigo(letraTemp);
-    for(int j=0;j<codigoL.length();j++){
-      char simbolo = codigoL.charAt(j);
-      if(simbolo=='A'){
-        generateDit();
-      }else if(simbolo=='B'){
-        generateSymbolSpace();
-      }else if(simbolo=='C'){
-        generateDash();
+    if(letraTemp==' '){
+      generateWordSpace();
+    }else{
+      
+      String codigoL = getCodigo(letraTemp);
+      for(int j=0;j<codigoL.length();j++){
+        char simbolo = codigoL.charAt(j);
+        
+        if(simbolo=='A'){
+          generateDit();
+        }else if(simbolo=='B'){
+          generateSymbolSpace();
+        }else if(simbolo=='C'){
+          generateDash();
+        }else if(simbolo=='F'){
+          generateWordSpace();
+        }
       }
+      generateLetterSpace();
     }
-    generateLetterSpace();
   }
   delay(100);
   digitalWrite(12, LOW);
@@ -212,6 +244,23 @@ void generateSymbolSpace(){
 void generateLetterSpace(){
   delay(ditTime*4);
 }
+void generateWordSpace(){
+  //Serial.println("WordSpace");
+  delay(ditTime*5);
+}
 
+void serialEvent() {
+  while (Serial.available()) {
+    // get the new byte:
+    char inChar = (char)Serial.read();
+    // add it to the inputString:
+    inputString += inChar;
+    // if the incoming character is a newline, set a flag
+    // so the main loop can do something about it:
+    if (inChar == '\n') {
+      stringComplete = true;
+    }
+  }
+}
 
 
