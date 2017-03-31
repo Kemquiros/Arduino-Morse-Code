@@ -39,7 +39,7 @@ void setup() {
   Timer1.attachInterrupt(timerIsr ); // attach the service routine here
 
   iniciarDiccionario();
-  enviar("LUIS");
+  enviar("LUIS FERNANDO");
   //Serial.println(getCodigo("L"));
 }
 
@@ -91,13 +91,15 @@ void leerMorse() {
             //Serial.println(mensaje);
             //mensaje= mensaje+letra;
             cadena="";
-          }else if(time>(ditTime*5)+dashTime-10 && time<(ditTime*5)+dashTime+10){
+          }
+          else if(time>(ditTime*5)+dashTime-10 && time<(ditTime*5)+dashTime+10){
             
-            
+            Serial.println("read space");
             mensaje =mensaje+ reconocer(cadena);
             mensaje=mensaje+" ";
             cadena="";
-          }else{
+          }
+          else{
             Serial.println(time);
           }
       }
@@ -205,10 +207,12 @@ void enviar(String msg){
         }else if(simbolo=='C'){
           generateDash();
         }else if(simbolo=='F'){
-          generateWordSpace();
+          
+          //generateWordSpace();
         }
       }
       generateLetterSpace();
+      
     }
   }
   delay(100);
