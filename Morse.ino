@@ -92,7 +92,7 @@ void leerMorse() {
             //mensaje= mensaje+letra;
             cadena="";
           }
-          else if(time>(ditTime*5)+dashTime-10 && time<(ditTime*5)+dashTime+10){
+          else if(time>(ditTime*5)-10 && time<(ditTime*5)+10){
             
             Serial.println("read space");
             mensaje =mensaje+ reconocer(cadena);
@@ -211,7 +211,15 @@ void enviar(String msg){
           //generateWordSpace();
         }
       }
-      generateLetterSpace();
+      if(i+1<msg.length()){
+        char nextChar = msg.charAt(i+1);
+        if(nextChar==' '){
+          
+        }else{
+          generateLetterSpace();
+        }
+      }
+      
       
     }
   }
